@@ -48,7 +48,7 @@ function App() {
             callback([]);
             return;
         }
-        axios.get('http://localhost:3001/api/search', { params: { q: inputValue } })
+        axios.get('https://compapp-gl49.onrender.com/api/search', { params: { q: inputValue } })
             .then(response => {
                 callback(response.data);
             })
@@ -67,7 +67,7 @@ function App() {
         setResult(null);
 
         try {
-            const response = await axios.get('http://localhost:3001/api/compare', {
+            const response = await axios.get('https://compapp-gl49.onrender.com/api/compare', {
                 params: { tickerA: selectedA.value, tickerB: selectedB.value }
             });
 
@@ -159,7 +159,7 @@ function App() {
     return (
         <div className="app-container">
             <div className="card">
-                <h1>Comparador de Market Cap</h1>
+                <h1>Comparador de Valor de Mercado</h1>
                 
                 <div className="form-group">
                     <label>Se a Empresa A:</label>
