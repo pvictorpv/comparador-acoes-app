@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import AsyncSelect from 'react-select/async'; 
 import './App.css'; 
-import { FiTrendingUp, FiRefreshCw, FiShare2, FiArrowRight } from 'react-icons/fi'; 
+import { FiTrendingUp, FiRefreshCw, FiShare2, FiArrowRight, FiAlertTriangle } from 'react-icons/fi'; // Adicionei FiAlertTriangle
 import html2canvas from 'html2canvas';
 
 // Helper de domínio
@@ -48,7 +48,9 @@ function App() {
             callback([]);
             return;
         }
-        axios.get('https://compapp-gl49.onrender.com/api/search', { params: { q: inputValue } })
+        // Lembre-se: Aqui deve estar a URL do seu Render, não localhost
+        // Ex: https://backend-comparador.onrender.com/api/search
+        axios.get('http://localhost:3001/api/search', { params: { q: inputValue } })
             .then(response => {
                 callback(response.data);
             })
@@ -67,18 +69,16 @@ function App() {
         setResult(null);
 
         try {
-            const response = await axios.get('https://compapp-gl49.onrender.com/api/compare', {
+            // Lembre-se: Aqui deve estar a URL do seu Render
+            const response = await axios.get('http://localhost:3001/api/compare', {
                 params: { tickerA: selectedA.value, tickerB: selectedB.value }
             });
 
-            // --- (A SOLUÇÃO ESTÁ AQUI) ---
-            // O backend faz o cálculo matemático, mas nós usamos os logos/sites 
-            // que já vieram da busca (selectedA/B), pois sabemos que eles funcionam!
             setResult({
-                ...response.data, // Pega os números do backend
-                logoA: selectedA.logo, // Pega o logo da busca
+                ...response.data, 
+                logoA: selectedA.logo, 
                 logoB: selectedB.logo,
-                websiteA: selectedA.website, // Pega o site da busca
+                websiteA: selectedA.website, 
                 websiteB: selectedB.website
             });
 
@@ -138,15 +138,12 @@ function App() {
             console.error("Erro ao compartilhar/gerar imagem:", err);
             if (err.name !== 'AbortError') {
                 setError("Falha ao compartilhar. Tentando baixar a imagem...");
-                // Fallback simples de download pode ser adicionado aqui se desejar
             }
         }
     };
 
-    // Componente de Logo para o RESULTADO
     const ResultLogo = ({ logo, website, ticker }) => {
         const domain = getDomainFromUrl(website);
-        // Mesma lógica da busca
         const finalLogoSrc = logo || (domain ? `https://logo.clearbit.com/${domain}` : null);
 
         if (finalLogoSrc) {
@@ -159,7 +156,15 @@ function App() {
     return (
         <div className="app-container">
             <div className="card">
-                <h1>Comparador de Valor de Mercado</h1>
+                <h1>Comparador de Market Cap</h1>
+
+                {/* --- AVISO DE SERVIDOR --- */}
+                <div className="server-warning">
+                    <FiAlertTriangle className="warning-icon" />
+                    <span>
+                        <strong>Nota:</strong> No primeiro acesso, a busca pode demorar cerca de 40s para iniciar (Servidor Gratuito).
+                    </span>
+                </div>
                 
                 <div className="form-group">
                     <label>Se a Empresa A:</label>
@@ -172,6 +177,9 @@ function App() {
                         formatOptionLabel={formatOptionLabel}
                         className="search-select"
                         classNamePrefix="select"
+                        // --- TRADUÇÃO AQUI ---
+                        loadingMessage={() => "Carregando..."}
+                        noOptionsMessage={() => "Nenhuma opção encontrada"}
                     />
                 </div>
 
@@ -186,6 +194,9 @@ function App() {
                         formatOptionLabel={formatOptionLabel}
                         className="search-select"
                         classNamePrefix="select"
+                        // --- TRADUÇÃO AQUI ---
+                        loadingMessage={() => "Carregando..."}
+                        noOptionsMessage={() => "Nenhuma opção encontrada"}
                     />
                 </div>
                 
@@ -227,7 +238,7 @@ function App() {
                             <hr />
 
                             <div className="hypothetical-result">
-                                <span className="result-label">Preço de {result.tickerA} com valor de mercado de {result.tickerB}:</span>
+                                <span className="result-label">Preço de {result.tickerA} com Market Cap de {result.tickerB}:</span>
                                 
                                 <div className="result-final-price">
                                     <strong className="hypothetical-price">

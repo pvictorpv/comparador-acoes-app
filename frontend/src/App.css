@@ -445,3 +445,32 @@ hr {
   font-size: 2.5em;
   color: var(--text-dark);
 }
+
+/* ======================================= */
+/* === AVISO DE SERVIDOR (RENDER) === */
+/* ======================================= */
+
+.server-warning {
+  background-color: rgba(255, 193, 7, 0.15); /* Amarelo transparente */
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  color: #ffca2c; /* Texto amarelo/ouro */
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.server-warning strong {
+  color: #fff; /* Destaque em branco */
+}
+
+.warning-icon {
+  font-size: 1.2em;
+  flex-shrink: 0;
+}
