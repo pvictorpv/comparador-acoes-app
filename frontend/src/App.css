@@ -366,3 +366,82 @@ hr {
 .nova-comparacao-btn .button-icon {
   font-size: 1.1em;
 }
+
+/* ======================================= */
+/* === (NOVO) ESTILOS PARA LOGOS NA BUSCA === */
+/* ======================================= */
+
+/* O container de cada opção de busca */
+.search-option-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* O logo pequeno na busca */
+.search-option-logo {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #fff;
+  /* Garante que imagens cross-origin não quebrem o html2canvas */
+  -webkit-user-drag: none; 
+}
+
+/* O placeholder pequeno na busca */
+.search-option-placeholder {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  font-weight: bold;
+  color: var(--bg-dark);
+}
+
+/* ======================================= */
+/* === ESTILOS RESTAURADOS PARA LOGOS === */
+/* ======================================= */
+
+.result-logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.logo-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  background-color: #fff; /* Fundo branco para logos transparentes */
+  padding: 2px;
+  border: 1px solid var(--border-light);
+}
+
+.logo-placeholder {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  background-color: #fff; 
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em; /* Letra grande */
+  font-weight: bold;
+  color: var(--bg-dark); 
+  padding: 2px;
+}
+
+.logo-divider {
+  font-size: 2.5em;
+  color: var(--text-dark);
+}

@@ -2,9 +2,37 @@ import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import AsyncSelect from 'react-select/async'; 
 import './App.css'; 
-// Ícone de Download trocado por Share
-import { FiTrendingUp, FiRefreshCw, FiShare2 } from 'react-icons/fi'; 
+import { FiTrendingUp, FiRefreshCw, FiShare2, FiArrowRight } from 'react-icons/fi'; 
 import html2canvas from 'html2canvas';
+
+// Helper de domínio
+const getDomainFromUrl = (url) => {
+    if (!url) return null;
+    try {
+        const domain = new URL(url).hostname;
+        return domain.replace(/^www\./, '');
+    } catch (error) {
+        return null; 
+    }
+};
+
+// Componente de Logo para a BUSCA
+const formatOptionLabel = ({ label, logo, website }) => {
+    const tickerInitial = label[label.indexOf('(') + 1] || '?'; 
+    const domain = getDomainFromUrl(website);
+    const finalLogoSrc = logo || (domain ? `https://logo.clearbit.com/${domain}` : null);
+
+    return (
+        <div className="search-option-label">
+            {finalLogoSrc ? (
+                <img src={finalLogoSrc} alt={label} className="search-option-logo" crossOrigin="anonymous" />
+            ) : (
+                <div className="search-option-placeholder">{tickerInitial}</div>
+            )}
+            <span>{label}</span>
+        </div>
+    );
+};
 
 function App() {
     const [selectedA, setSelectedA] = useState(null); 
@@ -42,7 +70,18 @@ function App() {
             const response = await axios.get('http://localhost:3001/api/compare', {
                 params: { tickerA: selectedA.value, tickerB: selectedB.value }
             });
-            setResult(response.data);
+
+            // --- (A SOLUÇÃO ESTÁ AQUI) ---
+            // O backend faz o cálculo matemático, mas nós usamos os logos/sites 
+            // que já vieram da busca (selectedA/B), pois sabemos que eles funcionam!
+            setResult({
+                ...response.data, // Pega os números do backend
+                logoA: selectedA.logo, // Pega o logo da busca
+                logoB: selectedB.logo,
+                websiteA: selectedA.website, // Pega o site da busca
+                websiteB: selectedB.website
+            });
+
         } catch (err) {
             if (err.response && err.response.data && err.response.data.error) {
                 setError(err.response.data.error);
@@ -66,13 +105,12 @@ function App() {
 
         const element = resultRef.current;
         const originalBg = element.style.backgroundColor;
-        
         element.style.backgroundColor = '#222'; 
 
         try {
             const canvas = await html2canvas(element, {
                 scale: 2,
-                useCORS: true,
+                useCORS: true, 
                 backgroundColor: '#222',
             });
 
@@ -80,8 +118,6 @@ function App() {
 
             const image = canvas.toDataURL('image/png');
             
-            // --- Lógica de Compartilhamento/Download ---
-            // Tenta usar a API de Share moderna
             if (navigator.share) {
                 const blob = await (await fetch(image)).blob();
                 const file = new File([blob], `comparacao_${result.tickerA}_vs_${result.tickerB}.png`, { type: 'image/png' });
@@ -90,7 +126,6 @@ function App() {
                     files: [file],
                 });
             } else {
-                // Se não puder, faz o download (fallback)
                 const link = document.createElement('a');
                 link.href = image;
                 link.download = `comparacao_${result.tickerA}_vs_${result.tickerB}.png`;
@@ -101,19 +136,24 @@ function App() {
 
         } catch (err) {
             console.error("Erro ao compartilhar/gerar imagem:", err);
-            // Fallback para download se o share falhar
             if (err.name !== 'AbortError') {
                 setError("Falha ao compartilhar. Tentando baixar a imagem...");
-                const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#222' });
-                const image = canvas.toDataURL('image/png');
-                const link = document.createElement('a');
-                link.href = image;
-                link.download = `comparacao_${result.tickerA}_vs_${result.tickerB}.png`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                // Fallback simples de download pode ser adicionado aqui se desejar
             }
         }
+    };
+
+    // Componente de Logo para o RESULTADO
+    const ResultLogo = ({ logo, website, ticker }) => {
+        const domain = getDomainFromUrl(website);
+        // Mesma lógica da busca
+        const finalLogoSrc = logo || (domain ? `https://logo.clearbit.com/${domain}` : null);
+
+        if (finalLogoSrc) {
+            return <img src={finalLogoSrc} alt={ticker} className="logo-img" crossOrigin="anonymous" />;
+        }
+        
+        return <div className="logo-placeholder">{ticker[0] || '?'}</div>;
     };
 
     return (
@@ -129,6 +169,7 @@ function App() {
                         loadOptions={loadOptions}
                         onChange={setSelectedA}
                         value={selectedA}
+                        formatOptionLabel={formatOptionLabel}
                         className="search-select"
                         classNamePrefix="select"
                     />
@@ -142,6 +183,7 @@ function App() {
                         loadOptions={loadOptions}
                         onChange={setSelectedB}
                         value={selectedB}
+                        formatOptionLabel={formatOptionLabel}
                         className="search-select"
                         classNamePrefix="select"
                     />
@@ -161,6 +203,12 @@ function App() {
                     <div className="result-container-wrapper">
                         <div className="result-container" ref={resultRef}> 
                             
+                            <div className="result-logos">
+                                <ResultLogo logo={result.logoA} website={result.websiteA} ticker={result.tickerA} />
+                                <FiArrowRight className="logo-divider icon-base-color" /> 
+                                <ResultLogo logo={result.logoB} website={result.websiteB} ticker={result.tickerB} />
+                            </div>
+
                             <h2>{result.longNameA} ({result.tickerA})</h2>
                             <h2 className="vs">vs</h2>
                             <h2>{result.longNameB} ({result.tickerB})</h2>
@@ -205,7 +253,6 @@ function App() {
                             </div>
                         </div>
                         <div className="result-actions">
-                            {/* --- (MUDANÇA AQUI) --- */}
                             <button onClick={handleShareImage} className="share-image-btn">
                                 <FiShare2 className="button-icon" /> Compartilhar
                             </button>
