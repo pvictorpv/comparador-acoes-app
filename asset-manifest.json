@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/compapp/static/css/main.0e209475.css",
+    "main.js": "/compapp/static/js/main.9ba0345e.js",
+    "static/js/453.d7446e4a.chunk.js": "/compapp/static/js/453.d7446e4a.chunk.js",
+    "index.html": "/compapp/index.html",
+    "main.0e209475.css.map": "/compapp/static/css/main.0e209475.css.map",
+    "main.9ba0345e.js.map": "/compapp/static/js/main.9ba0345e.js.map",
+    "453.d7446e4a.chunk.js.map": "/compapp/static/js/453.d7446e4a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0e209475.css",
+    "static/js/main.9ba0345e.js"
+  ]
+}
