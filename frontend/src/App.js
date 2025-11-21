@@ -2,8 +2,16 @@ import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import AsyncSelect from 'react-select/async'; 
 import './App.css'; 
-import { FiTrendingUp, FiRefreshCw, FiShare2, FiArrowRight, FiAlertTriangle } from 'react-icons/fi'; // Adicionei FiAlertTriangle
+import { FiTrendingUp, FiRefreshCw, FiShare2, FiArrowRight, FiAlertTriangle } from 'react-icons/fi'; 
 import html2canvas from 'html2canvas';
+
+// ==============================================================================
+// ⚠️ IMPORTANTE: COLE A URL DO SEU RENDER ABAIXO (SEM A BARRA NO FINAL)
+// Exemplo correto: const API_URL = 'https://backend-compapp.onrender.com';
+// ==============================================================================
+const API_URL = 'https://compapp-gl49.onrender.com'; 
+// ==============================================================================
+
 
 // Helper de domínio
 const getDomainFromUrl = (url) => {
@@ -48,9 +56,8 @@ function App() {
             callback([]);
             return;
         }
-        // Lembre-se: Aqui deve estar a URL do seu Render, não localhost
-        // Ex: https://backend-comparador.onrender.com/api/search
-        axios.get('http://localhost:3001/api/search', { params: { q: inputValue } })
+        // Agora usa a variável API_URL
+        axios.get(`${API_URL}/api/search`, { params: { q: inputValue } })
             .then(response => {
                 callback(response.data);
             })
@@ -69,8 +76,8 @@ function App() {
         setResult(null);
 
         try {
-            // Lembre-se: Aqui deve estar a URL do seu Render
-            const response = await axios.get('http://localhost:3001/api/compare', {
+            // Agora usa a variável API_URL
+            const response = await axios.get(`${API_URL}/api/compare`, {
                 params: { tickerA: selectedA.value, tickerB: selectedB.value }
             });
 
@@ -156,9 +163,9 @@ function App() {
     return (
         <div className="app-container">
             <div className="card">
-                <h1>Comparador de Market Cap</h1>
+                <h1>Comparador de Valor de Mercado</h1>
 
-                {/* --- AVISO DE SERVIDOR --- */}
+                {/* AVISO DE SERVIDOR */}
                 <div className="server-warning">
                     <FiAlertTriangle className="warning-icon" />
                     <span>
@@ -177,7 +184,6 @@ function App() {
                         formatOptionLabel={formatOptionLabel}
                         className="search-select"
                         classNamePrefix="select"
-                        // --- TRADUÇÃO AQUI ---
                         loadingMessage={() => "Carregando..."}
                         noOptionsMessage={() => "Nenhuma opção encontrada"}
                     />
@@ -194,7 +200,6 @@ function App() {
                         formatOptionLabel={formatOptionLabel}
                         className="search-select"
                         classNamePrefix="select"
-                        // --- TRADUÇÃO AQUI ---
                         loadingMessage={() => "Carregando..."}
                         noOptionsMessage={() => "Nenhuma opção encontrada"}
                     />
